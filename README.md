@@ -4,7 +4,7 @@
 
 This project utilizes SuperCollider for real-time sound processing. To simplify configuration, we have included scripts that automatically install the necessary dependencies on your system.
 
-## 📋 Prerequisites
+## Prerequisites
 
 * **SuperCollider** (v3.12 or higher) must be installed.
 * Audio server configured (Jack, Pipewire, or ASIO drivers on Windows).
