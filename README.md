@@ -21,12 +21,13 @@ Locate the launcher file corresponding to your Operating System in the project's
 1. **Execution Permission:** Before running for the first time, you must grant permission to the script. Open the Terminal and type `chmod +x ` (drag the file into the terminal window) and press Enter.
 2. **App Path:** The script assumes SuperCollider is located in the default `/Applications` folder.
 3. **Security:** If macOS blocks the app, go to *System Settings > Privacy & Security* and click "Open Anyway."
+4. **Installation:** On the first run, the classes will be copied. If a prompt appears, close it and run the file a second time to launch the main application.
 
 ### Linux (TraverserStartLinux.sh)
 1. **Permission:** Ensure the script is executable: `chmod +x TraverserStartLinux.sh`
 2. **Execution:** Double-click or run via terminal. The script uses the `sclang` command.
 3. **Nautilus:** If the script opens as text, enable "Run executable text files" in your file manager's preferences.
-
+4. **Installation:** On the first run, the classes will be copied. If a prompt appears, close it and run the file a second time to launch the main application.
 ---
 
 ## Package Structure
