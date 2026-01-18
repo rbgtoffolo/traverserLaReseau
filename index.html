@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="vexflow.js"></script>
+    <style>
+        body { background: white; margin: 0; overflow: hidden; }
+        #output { display: flex; justify-content: center; align-items: center; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="output"></div>
+<script>
+    const { Renderer, Stave, StaveNote, Voice, Formatter } = Vex.Flow;
+
+    // Função para enviar mensagens de erro de volta para o SuperCollider
+    window.onerror = function(msg, url, line) {
+        console.log("JS ERROR: " + msg + " na linha " + line);
+    };
+
+    function midiToVex(midi) {
+        const names = ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"];
+        const octave = Math.floor(midi / 12) - 1;
+        return names[midi % 12] + "/" + octave;
+    }
+
+  function drawScore(midiArray) {
+    try {
+        const div = document.getElementById("output");
+        if (!div) return;
+
+        div.innerHTML = "";
+        const renderer = new Renderer(div, Renderer.Backends.SVG);
+        renderer.resize(600, 400);
+        const context = renderer.getContext();
+
+        const trebleStave = new Stave(10, 40, 500).addClef("treble").setContext(context).draw();
+        const bassStave = new Stave(10, 160, 500).addClef("bass").setContext(context).draw();
+
+        const trebleNotes = [];
+        const bassNotes = [];
+
+        midiArray.forEach(midi => {
+            const noteName = midiToVex(midi); // Ex: "c#/4"
+            const hasAccidental = noteName.includes("#");
+
+            if (midi >= 60) {
+                // Criar nota de Sol
+                let note = new StaveNote({ keys: [noteName], duration: "w", clef: "treble" });
+                if (hasAccidental) {
+                    note.addModifier(new Vex.Flow.Accidental("#"));
+                }
+                trebleNotes.push(note);
+
+                // Fantasma de Fá
+                let ghost = new StaveNote({ keys: ["d/3"], duration: "w", clef: "bass" });
+                ghost.setStyle({ fillStyle: "none", strokeStyle: "none" });
+                bassNotes.push(ghost);
+            } else {
+                // Fantasma de Sol
+                let ghost = new StaveNote({ keys: ["b/4"], duration: "w", clef: "treble" });
+                ghost.setStyle({ fillStyle: "none", strokeStyle: "none" });
+                trebleNotes.push(ghost);
+
+                // Criar nota de Fá
+                let note = new StaveNote({ keys: [noteName], duration: "w", clef: "bass" });
+                if (hasAccidental) {
+                    note.addModifier(new Vex.Flow.Accidental("#"));
+                }
+                bassNotes.push(note);
+            }
+        });
+
+        const v1 = new Voice({ num_beats: midiArray.length * 4, beat_value: 4 }).addTickables(trebleNotes);
+        const v2 = new Voice({ num_beats: midiArray.length * 4, beat_value: 4 }).addTickables(bassNotes);
+
+        new Formatter().joinVoices([v1, v2]).format([v1, v2], 400);
+
+        v1.draw(context, trebleStave);
+        v2.draw(context, bassStave);
+    } catch (e) {
+        console.log("JS EXCEPTION: " + e.message);
+    }
+}
+</script>
+</body>
+</html>
